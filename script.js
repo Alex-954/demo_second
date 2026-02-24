@@ -128,12 +128,30 @@ function getPlanesFromName(fullName) {
     countsByValue[value] += 1;
   });
 
-  const plane1 = countsByValue[1] + countsByValue[8]; // mental
-  const plane2 = countsByValue[4] + countsByValue[5]; // physical
-  const plane3 = countsByValue[2] + countsByValue[3] + countsByValue[6]; // emotional
-  const plane4 = countsByValue[7] + countsByValue[9]; // intuitive
+  const plane1 = countsByValue[4] + countsByValue[5];
+  const plane2 = countsByValue[1] + countsByValue[8];
+  const plane3 = countsByValue[2] + countsByValue[3] + countsByValue[6];
+  const plane4 = countsByValue[7] + countsByValue[9];
 
   return [plane1, plane2, plane3, plane4];
+}
+
+function getSpecialFrequencyTableRows(fullName) {
+  const lettersByValue = {
+    1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
+  };
+
+  const letters = fullName.toUpperCase().match(/[A-Z]/g) || [];
+  letters.forEach((letter) => {
+    const value = LETTER_VALUES[letter];
+    lettersByValue[value].push(letter);
+  });
+
+  return Object.entries(lettersByValue).map(([number, mappedLetters]) => ({
+    number,
+    count: mappedLetters.length,
+    letters: mappedLetters.join(', ') || '-'
+  }));
 }
 
 function getDobInsights(dateText) {
@@ -204,6 +222,7 @@ document.getElementById('numerology-form').addEventListener('submit', (event) =>
   const challenges = getChallengesFromDate(birthDate);
   const planes = getPlanesFromName(fullName);
   const specialFrequency = reduceNumber(dobInsights.luckyNumber + dobInsights.personalYear + nameInsights.destinyNumber + dobInsights.kuaNumber);
+  const specialFrequencyTableRows = getSpecialFrequencyTableRows(fullName);
 
   document.getElementById('lifePath').textContent = lifePath;
   document.getElementById('luckyNumber').textContent = dobInsights.luckyNumber;
@@ -231,6 +250,15 @@ document.getElementById('numerology-form').addEventListener('submit', (event) =>
   document.getElementById('ultimateNumber').textContent = ultimateNumber;
   document.getElementById('bef').textContent = bef;
   document.getElementById('specialFrequency').textContent = specialFrequency;
+  document.getElementById('specialFrequencyTableBody').innerHTML = specialFrequencyTableRows
+    .map((row) => `
+      <tr>
+        <td>${row.number}</td>
+        <td>${row.count}</td>
+        <td>${row.letters}</td>
+      </tr>
+    `)
+    .join('');
 
   document.getElementById('pinnacle1').textContent = pinnacles[0];
   document.getElementById('pinnacle2').textContent = pinnacles[1];
