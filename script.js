@@ -128,12 +128,30 @@ function getPlanesFromName(fullName) {
     countsByValue[value] += 1;
   });
 
-  const plane1 = countsByValue[1] + countsByValue[8]; // mental
-  const plane2 = countsByValue[4] + countsByValue[5]; // physical
-  const plane3 = countsByValue[2] + countsByValue[3] + countsByValue[6]; // emotional
-  const plane4 = countsByValue[7] + countsByValue[9]; // intuitive
+  const plane1 = countsByValue[4] + countsByValue[5];
+  const plane2 = countsByValue[1] + countsByValue[8];
+  const plane3 = countsByValue[2] + countsByValue[3] + countsByValue[6];
+  const plane4 = countsByValue[7] + countsByValue[9];
 
   return [plane1, plane2, plane3, plane4];
+}
+
+function getSpecialFrequencyTableRows(fullName) {
+  const lettersByValue = {
+    1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: []
+  };
+
+  const letters = fullName.toUpperCase().match(/[A-Z]/g) || [];
+  letters.forEach((letter) => {
+    const value = LETTER_VALUES[letter];
+    lettersByValue[value].push(letter);
+  });
+
+  return Object.entries(lettersByValue).map(([number, mappedLetters]) => ({
+    number,
+    count: mappedLetters.length,
+    letters: mappedLetters.join(', ') || '-'
+  }));
 }
 
 function getDobInsights(dateText) {
@@ -195,29 +213,22 @@ document.getElementById('numerology-form').addEventListener('submit', (event) =>
   const lifePath = lifePathFromDate(birthDate);
   const nameInsights = getNameInsights(fullName);
   const dobInsights = getDobInsights(birthDate);
-  const expression = nameInsights.destinyNumber;
-  const soulUrge = nameInsights.heartNumber;
-  const personality = nameInsights.personalityNumber;
   const ultimateNumber = reduceNumber(dobInsights.luckyNumber + nameInsights.destinyNumber);
-  const bef = getPinnaclesFromDate(birthDate).join(' / ');
   const pinnacles = getPinnaclesFromDate(birthDate);
   const challenges = getChallengesFromDate(birthDate);
   const planes = getPlanesFromName(fullName);
   const specialFrequency = reduceNumber(dobInsights.luckyNumber + dobInsights.personalYear + nameInsights.destinyNumber + dobInsights.kuaNumber);
+  const specialFrequencyTableRows = getSpecialFrequencyTableRows(fullName);
 
   document.getElementById('lifePath').textContent = lifePath;
-  document.getElementById('luckyNumber').textContent = dobInsights.luckyNumber;
   document.getElementById('kuaNumber').textContent = dobInsights.kuaNumber;
+  document.getElementById('luckyNumbers').textContent = dobInsights.luckyNumber;
   document.getElementById('talentNumber').textContent = dobInsights.talentNumber;
   document.getElementById('birthNumber').textContent = dobInsights.birthNumber;
-  document.getElementById('nameNumberDob').textContent = dobInsights.nameNumberDob;
-  document.getElementById('personalYear').textContent = dobInsights.personalYear;
-  document.getElementById('currentYearNumber').textContent = dobInsights.currentYearNumber;
+  document.getElementById('nameNumber').textContent = dobInsights.nameNumberDob;
   document.getElementById('compatibleNumbers').textContent = dobInsights.compatibleNumbers.join(', ');
   document.getElementById('incompatibleNumbers').textContent = dobInsights.incompatibleNumbers.join(', ');
   document.getElementById('luckyColors').textContent = dobInsights.luckyColors.join(', ');
-  document.getElementById('luckyDays').textContent = dobInsights.luckyDays.join(', ');
-  document.getElementById('luckyDirection').textContent = dobInsights.luckyDirection;
 
   document.getElementById('destinyNumber').textContent = nameInsights.destinyNumber;
   document.getElementById('heartNumber').textContent = nameInsights.heartNumber;
@@ -225,12 +236,17 @@ document.getElementById('numerology-form').addEventListener('submit', (event) =>
   document.getElementById('personalityNumber').textContent = nameInsights.personalityNumber;
   document.getElementById('firstAlphabet').textContent = nameInsights.firstAlphabet;
   document.getElementById('firstVowel').textContent = nameInsights.firstVowel;
-  document.getElementById('expression').textContent = expression;
-  document.getElementById('soulUrge').textContent = soulUrge;
-  document.getElementById('personality').textContent = personality;
   document.getElementById('ultimateNumber').textContent = ultimateNumber;
-  document.getElementById('bef').textContent = bef;
   document.getElementById('specialFrequency').textContent = specialFrequency;
+  document.getElementById('specialFrequencyTableBody').innerHTML = specialFrequencyTableRows
+    .map((row) => `
+      <tr>
+        <td>${row.number}</td>
+        <td>${row.count}</td>
+        <td>${row.letters}</td>
+      </tr>
+    `)
+    .join('');
 
   document.getElementById('pinnacle1').textContent = pinnacles[0];
   document.getElementById('pinnacle2').textContent = pinnacles[1];

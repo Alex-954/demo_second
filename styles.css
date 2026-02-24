@@ -72,3 +72,29 @@ li {
 .hidden {
   display: none;
 }
+
+.frequency-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0 1rem;
+}
+
+.frequency-table th,
+.frequency-table td {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+}
+
+.frequency-table thead {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.frequency-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+
+h3 {
+  margin: 1rem 0 0.4rem;
+}
